@@ -1,6 +1,8 @@
 import Input from "../input/Input";
 
 const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
+  console.log(registration);
+
   const handleChange = () => {};
 
   const handlePrevStep = () => {

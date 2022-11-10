@@ -14,12 +14,12 @@ const signup = () => {
   });
 
   const handleNextStep = () => {
-    let newStep = step + 1;
+    let newStep = registration.step + 1;
     setRegistration({ ...registration, step: newStep });
   };
 
   const handlePrevStep = () => {
-    let prevStep = step - 1;
+    let prevStep = registration.step - 1;
     setRegistration({ ...registration, step: prevStep });
   };
 

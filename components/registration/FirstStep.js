@@ -54,9 +54,7 @@ const FirstStep = ({ nextStep, setRegistration, registration }) => {
   };
 
   const handleNext = () => {
-    console.log("hello");
     const errors = validateLogin();
-    console.log("errors", errors);
     setErrors({ ...errors, errors: errors || {} });
     if (errors) return;
 
