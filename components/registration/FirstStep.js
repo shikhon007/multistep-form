@@ -10,7 +10,7 @@ const FirstStep = ({ nextStep, setRegistration, registration }) => {
   };
 
   // validation data
-  const signUp = {
+  const checkSchema = {
     firstName: registration.firstName,
     lastName: registration.lastName,
   };
@@ -18,49 +18,54 @@ const FirstStep = ({ nextStep, setRegistration, registration }) => {
   // handle Error
   const [errors, setErrors] = useState({});
 
-  const validateLogin = () => {
-    const { error } = Joi.validate(signUp, schema, { abortEarly: false });
-    if (!error) return null;
-
-    const dataError = {};
-    for (let item of error.details) dataError[item.path[0]] = item.message;
-
-    return dataError;
-  };
-
-  const validateProperty = ({ name, value }) => {
-    //const { name, value } = event.target;
-    const obj = { [name]: value };
-    const subSchema = { [name]: schema[name] };
-    const { error } = Joi.validate(obj, subSchema);
-    return error ? error.details[0].message : null;
-  };
-
-  const handleChange = ({ target: input }) => {
-    //const { name, value } = event.target;
-    let errorData = { ...errors };
-    const errorMessage = validateProperty(input);
-    if (errorMessage) {
-      errorData[input.name] = errorMessage;
-    } else {
-      delete errorData[input.name];
-    }
-    let Data = { ...registration };
-    Data[input.name] = input.value;
-    setRegistration(Data);
-    setErrors(errorData);
-    // setRegistation({ ...signUp, [input.name]: input.value });
-    // setErrors({ ...errors, errors });
-  };
-
-  const handleNext = () => {
-    const errors = validateLogin();
-    setErrors({ ...errors, errors: errors || {} });
-    if (errors) return;
-
-    console.log("data is working");
+  const doSubmit = () => {
     nextStep();
-  };
+  }
+
+  const { handleChange, handleSubmit } = useForm(schema, checkSchema, registration, setRegistration, errors, setErrors, doSubmit)
+  // const validateLogin = () => {
+  //   const { error } = Joi.validate(signUp, schema, { abortEarly: false });
+  //   if (!error) return null;
+
+  //   const dataError = {};
+  //   for (let item of error.details) dataError[item.path[0]] = item.message;
+
+  //   return dataError;
+  // };
+
+  // const validateProperty = ({ name, value }) => {
+  //   //const { name, value } = event.target;
+  //   const obj = { [name]: value };
+  //   const subSchema = { [name]: schema[name] };
+  //   const { error } = Joi.validate(obj, subSchema);
+  //   return error ? error.details[0].message : null;
+  // };
+
+  // const handleChange = ({ target: input }) => {
+  //   //const { name, value } = event.target;
+  //   let errorData = { ...errors };
+  //   const errorMessage = validateProperty(input);
+  //   if (errorMessage) {
+  //     errorData[input.name] = errorMessage;
+  //   } else {
+  //     delete errorData[input.name];
+  //   }
+  //   let Data = { ...registration };
+  //   Data[input.name] = input.value;
+  //   setRegistration(Data);
+  //   setErrors(errorData);
+  //   // setRegistation({ ...signUp, [input.name]: input.value });
+  //   // setErrors({ ...errors, errors });
+  // };
+
+  // const handleNext = () => {
+  //   const errors = validateLogin();
+  //   setErrors({ ...errors, errors: errors || {} });
+  //   if (errors) return;
+
+  //   console.log("data is working");
+  //   nextStep();
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center mt-10">
@@ -96,7 +101,7 @@ const FirstStep = ({ nextStep, setRegistration, registration }) => {
             prev
           </button>
           <button
-            onClick={handleNext}
+            onClick={handleSubmit}
             className="w-[100px] bg-sky-300 text-white capitalize p-1 rounded-md hover:bg-sky-500"
           >
             next

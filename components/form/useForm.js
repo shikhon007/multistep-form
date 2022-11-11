@@ -1,8 +1,8 @@
-import { useState } from "react";
 import Joi from "joi-browser";
 
 const useForm = (
   schema,
+  checkSchema,
   formData,
   setFormData,
   errors,
@@ -13,7 +13,7 @@ const useForm = (
   // const [errors,setErrors] = useState(errorData);
 
   const validateLogin = () => {
-    const { error } = Joi.validate(formData, schema, { abortEarly: false });
+    const { error } = Joi.validate(checkSchema, schema, { abortEarly: false });
     if (!error) return null;
 
     const dataError = {};
@@ -60,3 +60,5 @@ const useForm = (
 };
 
 export default useForm;
+
+

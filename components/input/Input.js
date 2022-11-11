@@ -1,8 +1,8 @@
-const Input = ({ name, label, type, onChange, value, placeholder, error }) => {
+const Input = ({ name, label, type, onChange, value, placeholder, error, isRequired }) => {
   return (
-    <div className="flex flex-col mt-4 p-2">
-      <label className=" uppercase" htmlFor={name}>
-        {label}
+    <div className="flex flex-col mt-4">
+      <label className=" capitalize" htmlFor={name}>
+        {label} {isRequired && <span className=" text-red-300">**</span>}
       </label>
       <input
         type={type}
@@ -11,7 +11,7 @@ const Input = ({ name, label, type, onChange, value, placeholder, error }) => {
         value={value}
         placeholder={placeholder}
         name={name}
-        className="justify-center border border-gray-200 rounded-md p-2 w-[300px]"
+        className="justify-center border-b-2 border-sky-500 outline-none rounded py-2 w-[300px]"
       />
       {error && <p className=" text-red-500 text-xs mt-2">{error}</p>}
     </div>

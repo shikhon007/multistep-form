@@ -1,20 +1,39 @@
+import Joi from "joi-browser";
 import Input from "../input/Input";
+import useForm from './../form/useForm';
+import { useState } from 'react';
 
 const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
-  console.log(registration);
 
-  const handleChange = () => {};
+
+  const schema = {
+    mobile: Joi.string().min(11).max(11).required().label("Mobile"),
+    email: Joi.string().required().label("email")
+  }
+  const [errors, setErrors] = useState({});
+
+  const checkSchema = {
+    mobile: registration.mobile,
+    email: registration.email
+  }
+
 
   const handlePrevStep = () => {
     prevStep();
   };
 
+  const doSubmit = () => {
+    nextStep();
+  };
+
+  const { handleChange, handleSubmit } = useForm(schema, checkSchema, registration, setRegistration, errors, setErrors, doSubmit)
+
   return (
     <div className="flex flex-col items-center justify-center mt-10">
-      <h3 className="text-2xl mb-5 text-sky-500">Registration Form</h3>
+      <h3 className="text-2xl mb-5 text-sky-300">Registration Form</h3>
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[400px] h-[450px] border-t-4 border-sky-300"
+        className="flex flex-col items-center justify-center shadow-md shadow-slate-300 w-[400px] h-[450px] border-t-8 border-sky-200"
       >
         <Input
           type="text"
@@ -23,6 +42,7 @@ const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
           placeholder="enter your mobile"
           name="mobile"
           label="Mobile"
+          error={errors.mobile}
         />
         <Input
           type="email"
@@ -31,6 +51,7 @@ const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
           placeholder="enter your email"
           name="email"
           label="email"
+          error={errors.email}
         />
 
         <div className="space-x-4 mt-4">
@@ -40,7 +61,7 @@ const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
           >
             prev
           </button>
-          <button className="w-[100px] bg-sky-300 text-white capitalize p-1 rounded-md hover:bg-sky-500">
+          <button onClick={handleSubmit} className="w-[100px] bg-sky-300 text-white capitalize p-1 rounded-md hover:bg-sky-500">
             next
           </button>
         </div>

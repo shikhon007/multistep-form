@@ -1,6 +1,8 @@
 import { useState } from "react";
 import FirstStep from "../components/registration/FirstStep";
 import SecondStep from "../components/registration/SecondStep";
+import ThirdStep from "../components/registration/ThirdStep";
+import FinalStep from './../components/registration/FinalStep';
 const signup = () => {
   const [registration, setRegistration] = useState({
     step: 1,
@@ -41,7 +43,27 @@ const signup = () => {
           registration={registration}
         />
       );
+    case 3:
+      return (
+        <ThirdStep
+          nextStep={handleNextStep}
+          prevStep={handlePrevStep}
+          setRegistration={setRegistration}
+          registration={registration}
+        />
+      )
+    case 4:
+      return (
+        <FinalStep
+          nextStep={handleNextStep}
+          prevStep={handlePrevStep}
+          setRegistration={setRegistration}
+          registration={registration}
+        />
+      )
   }
 };
+
+
 
 export default signup;
