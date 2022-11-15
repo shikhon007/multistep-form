@@ -1,4 +1,5 @@
 import Joi from "joi-browser";
+import { useState } from "react";
 
 const useForm = (
   schema,
@@ -10,7 +11,7 @@ const useForm = (
   doSubmit
 ) => {
   // const [formData,setFormData] = useState(allData);
-  // const [errors,setErrors] = useState(errorData);
+  //const [errors, setErrors] = useState({ username: "" });
 
   const validateLogin = () => {
     const { error } = Joi.validate(checkSchema, schema, { abortEarly: false });
@@ -28,15 +29,18 @@ const useForm = (
     setErrors({ ...errors, errors: errors || {} });
     if (errors) return;
 
+    // some work needed
     doSubmit();
   };
 
   const validateProperty = ({ name, value }) => {
     //const { name, value } = event.target;
-    const obj = { [name]: value };
-    const subSchema = { [name]: schema[name] };
-    const { error } = Joi.validate(obj, subSchema);
-    return error ? error.details[0].message : null;
+    if (name.toString() !== "confirmPassword") {
+      const obj = { [name]: value };
+      const subSchema = { [name]: schema[name] };
+      const { error } = Joi.validate(obj, subSchema);
+      return error ? error.details[0].message : null;
+    }
   };
 
   const handleChange = ({ target: input }) => {
@@ -50,15 +54,13 @@ const useForm = (
     }
     let Data = { ...formData };
     Data[input.name] = input.value;
-    setFormData(Data);
+    setFormData(Data, input.name);
     setErrors(errorData);
     //setSignUp({...signUp,[input.name]: input.value});
     //setErrors({...errors,errors})
   };
 
-  return { handleChange, handleSubmit };
+  return { handleChange, handleSubmit, errors };
 };
 
 export default useForm;
-
-

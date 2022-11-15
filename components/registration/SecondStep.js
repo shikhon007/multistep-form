@@ -1,32 +1,51 @@
 import Joi from "joi-browser";
 import Input from "../input/Input";
-import useForm from './../form/useForm';
-import { useState } from 'react';
+import useForm from "./../form/useForm";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  handleNextStep,
+  handlePrevStep,
+  setErrors,
+  setRegistration,
+} from "./registrationSlice";
 
-const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
-
+const SecondStep = () => {
+  const registration = useSelector((state) => state.registration);
+  const { errors, mobile, email } = registration;
+  const dispatch = useDispatch();
 
   const schema = {
     mobile: Joi.string().min(11).max(11).required().label("Mobile"),
-    email: Joi.string().required().label("email")
-  }
-  const [errors, setErrors] = useState({});
+    email: Joi.string().required().label("email"),
+  };
 
   const checkSchema = {
-    mobile: registration.mobile,
-    email: registration.email
-  }
+    mobile: mobile,
+    email: email,
+  };
 
+  const setRegistrationData = (data, inputName) => {
+    let newData = { ...data, inputName };
+    dispatch(setRegistration(newData));
+  };
 
-  const handlePrevStep = () => {
-    prevStep();
+  const setErrorsData = (error) => {
+    dispatch(setErrors(error));
   };
 
   const doSubmit = () => {
-    nextStep();
+    dispatch(handleNextStep());
   };
 
-  const { handleChange, handleSubmit } = useForm(schema, checkSchema, registration, setRegistration, errors, setErrors, doSubmit)
+  const { handleChange, handleSubmit } = useForm(
+    schema,
+    checkSchema,
+    registration,
+    setRegistrationData,
+    errors,
+    setErrorsData,
+    doSubmit
+  );
 
   return (
     <div className="flex flex-col items-center justify-center mt-10">
@@ -38,7 +57,7 @@ const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
         <Input
           type="text"
           onChange={handleChange}
-          value={registration.mobile}
+          value={mobile}
           placeholder="enter your mobile"
           name="mobile"
           label="Mobile"
@@ -47,7 +66,7 @@ const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
         <Input
           type="email"
           onChange={handleChange}
-          value={registration.email}
+          value={email}
           placeholder="enter your email"
           name="email"
           label="email"
@@ -56,12 +75,15 @@ const SecondStep = ({ nextStep, prevStep, setRegistration, registration }) => {
 
         <div className="space-x-4 mt-4">
           <button
-            onClick={handlePrevStep}
+            onClick={() => dispatch(handlePrevStep())}
             className="w-[100px] bg-sky-300 text-white capitalize p-1 rounded-md hover:bg-sky-500"
           >
             prev
           </button>
-          <button onClick={handleSubmit} className="w-[100px] bg-sky-300 text-white capitalize p-1 rounded-md hover:bg-sky-500">
+          <button
+            onClick={handleSubmit}
+            className="w-[100px] bg-sky-300 text-white capitalize p-1 rounded-md hover:bg-sky-500"
+          >
             next
           </button>
         </div>

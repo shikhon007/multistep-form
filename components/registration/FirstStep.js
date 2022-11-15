@@ -1,71 +1,89 @@
+import { useState, useEffect } from "react";
 import Joi from "joi-browser";
-import { useState } from "react";
+import useSWR from "swr";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import useForm from "../form/useForm";
 import Input from "../input/Input";
-const FirstStep = ({ nextStep, setRegistration, registration }) => {
+import {
+  handleNextStep,
+  setErrors,
+  setRegistration,
+} from "./registrationSlice";
+
+// fetcher method
+const fetcher = (url) => axios.get(url).then((res) => res.data);
+
+const FirstStep = () => {
+  // using redux toolkit
+  const registration = useSelector((state) => state.registration);
+  const { errors, username, firstName, lastName } = registration;
+  const dispatch = useDispatch();
+
   // schema for validation
   const schema = {
+    username: Joi.string().min(4).max(20).required().label("Username"),
     firstName: Joi.string().min(4).max(20).required().label("FirstName"),
     lastName: Joi.string().min(4).max(20).required().label("LastName"),
   };
 
   // validation data
   const checkSchema = {
-    firstName: registration.firstName,
-    lastName: registration.lastName,
+    username: username,
+    firstName: firstName,
+    lastName: lastName,
   };
 
-  // handle Error
-  const [errors, setErrors] = useState({});
+  // set onchange data
+  const setRegistrationData = (data, inputName) => {
+    let newdata = { ...data, inputName };
+    dispatch(setRegistration(newdata));
+  };
 
-  const doSubmit = () => {
-    nextStep();
-  }
+  // set error data
+  const setErrorsData = (error) => {
+    dispatch(setErrors(error));
+  };
 
-  const { handleChange, handleSubmit } = useForm(schema, checkSchema, registration, setRegistration, errors, setErrors, doSubmit)
-  // const validateLogin = () => {
-  //   const { error } = Joi.validate(signUp, schema, { abortEarly: false });
-  //   if (!error) return null;
+  // submit form data
+  const doSubmit = async () => {
+    // dispatch(handleNextStep());
 
-  //   const dataError = {};
-  //   for (let item of error.details) dataError[item.path[0]] = item.message;
+    const findUser = data.data.find((d) => d.username === username);
+    if (findUser) {
+      dispatch(setErrors({ ...errors, username: '"Username" already exist' }));
+    } else {
+      dispatch(handleNextStep());
+    }
+  };
 
-  //   return dataError;
-  // };
+  const { handleChange, handleSubmit } = useForm(
+    schema,
+    checkSchema,
+    registration,
+    setRegistrationData,
+    errors,
+    setErrorsData,
+    doSubmit
+  );
 
-  // const validateProperty = ({ name, value }) => {
-  //   //const { name, value } = event.target;
-  //   const obj = { [name]: value };
-  //   const subSchema = { [name]: schema[name] };
-  //   const { error } = Joi.validate(obj, subSchema);
-  //   return error ? error.details[0].message : null;
-  // };
-
-  // const handleChange = ({ target: input }) => {
-  //   //const { name, value } = event.target;
-  //   let errorData = { ...errors };
-  //   const errorMessage = validateProperty(input);
-  //   if (errorMessage) {
-  //     errorData[input.name] = errorMessage;
-  //   } else {
-  //     delete errorData[input.name];
+  // const [data, setData] = useState([]);
+  // const getData = async () => {
+  //   try {
+  //     const { data } = await axios.get("http://localhost:3030/api/user");
+  //     setData(data);
+  //   } catch (err) {
+  //     console.error(err.message);
   //   }
-  //   let Data = { ...registration };
-  //   Data[input.name] = input.value;
-  //   setRegistration(Data);
-  //   setErrors(errorData);
-  //   // setRegistation({ ...signUp, [input.name]: input.value });
-  //   // setErrors({ ...errors, errors });
   // };
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
-  // const handleNext = () => {
-  //   const errors = validateLogin();
-  //   setErrors({ ...errors, errors: errors || {} });
-  //   if (errors) return;
-
-  //   console.log("data is working");
-  //   nextStep();
-  // };
+  const { data, error } = useSWR("http://localhost:3030/api/user", fetcher);
+  if (error) return <div>failed to load</div>;
+  if (!data)
+    return <div className="text-center text-3xl mt-20">Loading...</div>;
 
   return (
     <div className="flex flex-col items-center justify-center mt-10">
@@ -77,7 +95,16 @@ const FirstStep = ({ nextStep, setRegistration, registration }) => {
         <Input
           type="text"
           onChange={handleChange}
-          value={registration.firstName}
+          value={username}
+          placeholder="enter your username"
+          name="username"
+          label="username"
+          error={errors.username}
+        />
+        <Input
+          type="text"
+          onChange={handleChange}
+          value={firstName}
           placeholder="enter your firstname"
           name="firstName"
           label="Firstname"
@@ -86,7 +113,7 @@ const FirstStep = ({ nextStep, setRegistration, registration }) => {
         <Input
           type="text"
           onChange={handleChange}
-          value={registration.lastName}
+          value={lastName}
           placeholder="enter your Lastname"
           name="lastName"
           label="Lastname"
